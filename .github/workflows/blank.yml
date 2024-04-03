@@ -39,4 +39,5 @@ jobs:
           echo "::set-output name=pull_requests::$pull_requests"
 
       - name: Mostrar números dos Pull Requests
-        run: echo "Números dos Pull Requests com 'teste' no título: ${{ steps.find_pull_requests.outputs.pull_requests }}"
+        run: |
+          echo "Números dos Pull Requests com teste no título: ${{ steps.find_pull_requests.outputs.pull_requests }}"
