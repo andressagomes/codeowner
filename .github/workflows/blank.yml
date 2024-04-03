@@ -43,5 +43,7 @@ jobs:
         run: |
           for pr_number in ${{ steps.find_pull_requests.outputs.pull_requests }}; do
             echo "Adicionando revisores ao Pull Request #$pr_number"
-            gh pr review-request add $pr_number --reviewer username1 --reviewer username2
+            gh pr review $pr_number --approve --body "Por favor, revise este PR" --comment "Por favor, revise este PR"
+            # Criar uma solicitação de revisão e atribuir revisores
+            gh pr review-request create $pr_number --reviewer andressagomes 
           done
