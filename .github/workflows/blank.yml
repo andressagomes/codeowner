@@ -38,6 +38,12 @@ jobs:
             jq -r '.[] | select(.title | test("teste"; "i")) | .number')
           echo "::set-output name=pull_requests::$pull_requests"
 
-      - name: Mostrar números dos Pull Requests
+      - name: Adicionar revisores aos Pull Requests
+        if: steps.find_pull_requests.outputs.pull_requests != ''
         run: |
-          echo "Números dos Pull Requests com teste no título: ${{ steps.find_pull_requests.outputs.pull_requests }}"
+          for pr_number in ${{ steps.find_pull_requests.outputs.pull_requests }}; do
+            echo "Adicionando revisores ao Pull Request #$pr_number"
+            # Comando para adicionar revisores ao pull request, substitua com a lógica apropriada para sua plataforma (GitHub, GitLab, etc.)
+            # Exemplo:
+            # gh pr review-request add $pr_number --reviewer username1 --reviewer username2
+          done
