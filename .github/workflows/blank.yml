@@ -43,7 +43,5 @@ jobs:
         run: |
           for pr_number in ${{ steps.find_pull_requests.outputs.pull_requests }}; do
             echo "Adicionando revisores ao Pull Request #$pr_number"
-            # Comando para adicionar revisores ao pull request, substitua com a lógica apropriada para sua plataforma (GitHub, GitLab, etc.)
-            # Exemplo:
-            # gh pr review-request add $pr_number --reviewer username1 --reviewer username2
+            gh pr review-request add $pr_number --reviewer username1 --reviewer username2
           done
