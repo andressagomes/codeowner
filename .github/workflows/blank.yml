@@ -1,36 +1,49 @@
-# This is a basic workflow to help you get started with Actions
-
 name: CI
 
-# Controls when the workflow will run
 on:
-  # Triggers the workflow on push or pull request events but only for the "main" branch
   push:
-    branches: [ "main" ]
+    branches: [ "develop" ]
   pull_request:
-    branches: [ "main" ]
-
-  # Allows you to run this workflow manually from the Actions tab
+    branches: [ "develop" ]
   workflow_dispatch:
 
-# A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
-  # This workflow contains a single job called "build"
   build:
-    # The type of runner that the job will run on
     runs-on: ubuntu-latest
 
-    # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
-      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-      - uses: actions/checkout@v3
+      - name: Checkout do repositório
+        uses: actions/checkout@v3
 
-      # Runs a single command using the runners shell
       - name: Run a one-line script
         run: echo Hello, world!
 
-      # Runs a set of commands using the runners shell
       - name: Run a multi-line script
         run: |
-          echo Add other actions to build,
-          echo test, and deploy your project.
+          echo Adicione outras ações para construir,
+          echo testar e implantar seu projeto.
+
+  buscar_pull_requests:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout do repositório
+        uses: actions/checkout@v3
+
+      - name: Buscar Pull Requests com 'teste' no título
+        id: find_pull_requests
+        run: |
+          pull_requests=$(curl -s -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+            "https://api.github.com/repos/${{ github.repository }}/pulls" | \
+            jq -r '.[] | select(.title | test("teste"; "i")) | .number')
+          echo "::set-output name=pull_requests::$pull_requests"
+
+      - name: Adicionar revisores aos Pull Requests
+        if: steps.find_pull_requests.outputs.pull_requests != ''
+        run: |
+          for pr_number in ${{ steps.find_pull_requests.outputs.pull_requests }}; do
+            echo "Adicionando revisores ao Pull Request #$pr_number"
+            gh pr review $pr_number --approve --body "Por favor, revise este PR" --comment "Por favor, revise este PR"
+            # Criar uma solicitação de revisão e atribuir revisores
+            gh pr review-request create $pr_number --reviewer andressagomes 
+          done
